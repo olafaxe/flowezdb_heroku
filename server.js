@@ -3,6 +3,44 @@ const app = express();
 const port = process.env.PORT || 8000;
 const cors = require("cors");
 
+conf = {
+  // look for PORT environment variable,
+  // else look for CLI argument,
+  // else use hard coded value for port 8080
+  port: process.env.PORT || process.argv[2] || 8080,
+
+  // origin undefined handler
+  // see https://github.com/expressjs/cors/issues/71
+  originUndefined: function (req, res, next) {
+    if (!req.headers.origin) {
+      res.json({
+        mess:
+          "Hi you are visiting the service locally. If this was a CORS the origin header should not be undefined",
+      });
+    } else {
+      next();
+    }
+  },
+
+  // Cross Origin Resource Sharing Options
+  cors: {
+    // origin handler
+    origin: function (origin, cb) {
+      // setup a white list
+      let wl = ["https://dustinpfister.github.io"];
+
+      if (wl.indexOf(origin) != -1) {
+        cb(null, true);
+      } else {
+        cb(new Error("invalid origin: " + origin), false);
+      }
+    },
+
+    optionsSuccessStatus: 200,
+  },
+};
+app.use(conf.originUndefined, cors(conf.cors));
+
 const MongoClient = require("mongodb").MongoClient;
 const url = process.env.MONGODB_URI || "mongodb://localhost:27017";
 const client = new MongoClient(url, {
@@ -26,7 +64,6 @@ app.get("/flowcharts", (req, res) => {
   });
 });
 
-app.use(cors());
 //parsing incoming requests
 app.use(
   express.urlencoded({
