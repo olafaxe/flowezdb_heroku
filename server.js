@@ -1,6 +1,7 @@
 const express = require("express");
 const app = express();
 const port = process.env.PORT || 8000;
+const cors = require("cors");
 
 const MongoClient = require("mongodb").MongoClient;
 const url = process.env.MONGODB_URI || "mongodb://localhost:27017";
@@ -25,6 +26,7 @@ app.get("/flowcharts", (req, res) => {
   });
 });
 
+app.use(cors());
 //parsing incoming requests
 app.use(
   express.urlencoded({
