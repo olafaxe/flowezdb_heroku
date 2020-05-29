@@ -19,7 +19,7 @@ let db;
 client.connect(function (err) {
   if (err) throw err;
   //users is the name of the collection from the db document
-  db = client.db(process.env.HEROKU_URL || "flowez");
+  db = client.db("heroku_d8xww5mw");
 });
 
 //getting all the users from document db "fake", collection "users"
